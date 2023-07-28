@@ -83,7 +83,6 @@ class HomeFragment: Fragment(), FriendsListAdapter.IOnFriendClickListener {
         viewModel.onGetFriends.observe(viewLifecycleOwner) { friends ->
             friendsListAdapter.friendsList = friends
         }
-
     }
 
     override fun onFriendClicked(friend: Friend) {
@@ -91,5 +90,4 @@ class HomeFragment: Fragment(), FriendsListAdapter.IOnFriendClickListener {
             putString("FRIEND_KEY", GsonUtil.toJson(friend))
         })
     }
-
 }

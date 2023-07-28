@@ -67,7 +67,7 @@ class ChatFragment: Fragment() {
     private fun connectViewModel() {
         friend?.let { viewModel.getMessages(it) }
         viewModel.onError.observe(viewLifecycleOwner) {
-            Log.i("===HOME_VIEW_MODEL_ERROR===>", it)
+            Log.i("===CHAT_VIEW_MODEL_ERROR===>", it)
         }
 
         viewModel.isBusy.observe(viewLifecycleOwner) {
@@ -78,7 +78,5 @@ class ChatFragment: Fragment() {
             chatAdapter.chatMessages = messages
             binding.recyclerViewMessages.smoothScrollToPosition(chatAdapter.itemCount)
         }
-
     }
-
 }
