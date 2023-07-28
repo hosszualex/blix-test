@@ -5,7 +5,7 @@ import modals.Friend
 
 @Dao
 interface IFriendDAO {
-    @Query("SELECT * FROM friends_table ORDER BY name DESC")
+    @Query("SELECT * FROM friends_table ORDER BY id ASC")
     suspend fun getFriendsAlphabetically(): List<Friend>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

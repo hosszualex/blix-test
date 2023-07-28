@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import modals.Friend
 import modals.Message
 
-@Database(entities = [Friend::class, Message::class], version = 3, exportSchema = false)
+@Database(entities = [Friend::class, Message::class], version = 4, exportSchema = false)
 abstract class MessagingAppRoomDatabase : RoomDatabase() {
     abstract fun friendDAO(): IFriendDAO
     abstract fun messageDAO(): IMessagesDAO
