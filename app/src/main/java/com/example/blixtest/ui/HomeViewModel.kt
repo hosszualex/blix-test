@@ -48,11 +48,13 @@ class HomeViewModel(private val database: FriendsRoomDatabase) : ViewModel() {
     }
 
 
-    fun addNewFriend(friend: Friend) {
+    fun addNewFriend(name: String) {
         if (_isBusy.value == null || _isBusy.value == true)
             return
 
+        val newId = _onGetFriends.value?.lastOrNull()?.id?.plus(1) ?: 1
         _isBusy.value = true
+        val friend = Friend(newId, name)
         viewModelScope.launch {
             roomRepository.updateDeliveryOrder(friend, {
                 _isBusy.value = false

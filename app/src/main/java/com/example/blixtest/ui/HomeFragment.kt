@@ -1,13 +1,18 @@
 package com.example.blixtest.ui
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.example.blixtest.databinding.FragmentHomeBinding
 import com.example.blixtest.room.FriendsRoomDatabase
+import modals.Friend
 
 
 class HomeFragment: Fragment(), ChatAdapter.IOnFriendClickListener {
@@ -44,8 +49,24 @@ class HomeFragment: Fragment(), ChatAdapter.IOnFriendClickListener {
         chatAdapter = ChatAdapter(requireContext(), this)
         binding.recyclerViewUsers.adapter = chatAdapter
         binding.floatingButtonAdd.setOnClickListener {
-
+            showAddFriendDialog()
         }
+    }
+
+    private fun showAddFriendDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Add new friend")
+        val input = EditText(requireContext())
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+        builder.setPositiveButton("Add") { dialog, which ->
+            viewModel.addNewFriend(input.text.toString())
+        }
+        builder.setNegativeButton(
+            "Cancel"
+        ) { dialog, which -> dialog.cancel() }
+
+        builder.show()
     }
 
     private fun connectViewModel() {
@@ -60,6 +81,7 @@ class HomeFragment: Fragment(), ChatAdapter.IOnFriendClickListener {
         viewModel.onGetFriends.observe(viewLifecycleOwner) { friends ->
             chatAdapter.friendsList = friends
         }
+
     }
 
     override fun onFriendClicked() {
