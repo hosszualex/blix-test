@@ -1,7 +1,6 @@
 package com.example.blixtest.ui
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -11,18 +10,17 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.example.blixtest.databinding.FragmentHomeBinding
-import com.example.blixtest.room.FriendsRoomDatabase
-import modals.Friend
+import com.example.blixtest.room.MessagingAppRoomDatabase
 
 
-class HomeFragment: Fragment(), ChatAdapter.IOnFriendClickListener {
+class HomeFragment: Fragment(), FriendsListAdapter.IOnFriendClickListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding
         get() = _binding!!
 
     private lateinit var viewModel: HomeViewModel
-    private lateinit var chatAdapter: ChatAdapter
+    private lateinit var friendsListAdapter: FriendsListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +28,7 @@ class HomeFragment: Fragment(), ChatAdapter.IOnFriendClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        viewModel = HomeViewModelFactory(FriendsRoomDatabase.getDatabase(requireContext())).create(HomeViewModel::class.java)
+        viewModel = HomeViewModelFactory(MessagingAppRoomDatabase.getDatabase(requireContext())).create(HomeViewModel::class.java)
         return binding.root
     }
 
@@ -46,8 +44,8 @@ class HomeFragment: Fragment(), ChatAdapter.IOnFriendClickListener {
     }
 
     private fun setupViews() {
-        chatAdapter = ChatAdapter(requireContext(), this)
-        binding.recyclerViewUsers.adapter = chatAdapter
+        friendsListAdapter = FriendsListAdapter(requireContext(), this)
+        binding.recyclerViewUsers.adapter = friendsListAdapter
         binding.floatingButtonAdd.setOnClickListener {
             showAddFriendDialog()
         }
@@ -79,7 +77,7 @@ class HomeFragment: Fragment(), ChatAdapter.IOnFriendClickListener {
         }
 
         viewModel.onGetFriends.observe(viewLifecycleOwner) { friends ->
-            chatAdapter.friendsList = friends
+            friendsListAdapter.friendsList = friends
         }
 
     }

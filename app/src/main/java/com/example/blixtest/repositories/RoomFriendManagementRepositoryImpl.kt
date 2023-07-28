@@ -6,14 +6,14 @@ import com.example.blixtest.room.IFriendDAO
 class RoomFriendManagementRepositoryImpl(private val friendDAO: IFriendDAO):
     IFriendManagementRepository {
 
-    override suspend fun getDeliveryOrders(
+    override suspend fun getFriends(
         successCallback: (List<Friend>) -> Unit,
         failedCallback: (String) -> Unit
     ) {
         successCallback(friendDAO.getFriendsAlphabetically())
     }
 
-    override suspend fun updateAllDeliveryOrders(
+    override suspend fun updateAllFriends(
         friends: List<Friend>,
         successCallback: () -> Unit,
         failedCallback: (String) -> Unit
@@ -23,7 +23,7 @@ class RoomFriendManagementRepositoryImpl(private val friendDAO: IFriendDAO):
         successCallback()
     }
 
-    override suspend fun updateDeliveryOrder(
+    override suspend fun addFriend(
         friend: Friend,
         successCallback: () -> Unit,
         failedCallback: (String) -> Unit

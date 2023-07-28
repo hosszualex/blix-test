@@ -1,14 +1,14 @@
 package com.example.blixtest.ui
 
 import androidx.lifecycle.*
-import com.example.blixtest.repositories.IFriendManagementRepository
-import com.example.blixtest.repositories.RoomFriendManagementRepositoryImpl
+import com.example.blixtest.repositories.IMessageManagementRepository
+import com.example.blixtest.repositories.RoomMessagesManagementRepositoryImpl
 import com.example.blixtest.room.MessagingAppRoomDatabase
 import com.example.blixtest.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
-import modals.Friend
+import modals.Message
 
-class HomeViewModel(private val database: MessagingAppRoomDatabase) : ViewModel() {
+class ChatViewModel(private val database: MessagingAppRoomDatabase) : ViewModel() {
 
     private val _isBusy = MutableLiveData<Boolean>(false)
     val isBusy: LiveData<Boolean>
@@ -18,27 +18,27 @@ class HomeViewModel(private val database: MessagingAppRoomDatabase) : ViewModel(
     val onError: SingleLiveEvent<String>
         get() = _onError
 
-    private val _onGetFriends = MutableLiveData<ArrayList<Friend>>()
-    val onGetFriends: LiveData<ArrayList<Friend>>
-        get() = _onGetFriends
+    private val _onGetMessages = MutableLiveData<ArrayList<Message>>()
+    val onGetMessage: LiveData<ArrayList<Message>>
+        get() = _onGetMessages
 
-    private val roomRepository: IFriendManagementRepository =
-        RoomFriendManagementRepositoryImpl(database.friendDAO())
+    private val roomRepository: IMessageManagementRepository =
+        RoomMessagesManagementRepositoryImpl(database.messageDAO())
 
     init {
-        getFriends()
+        getMessages()
     }
 
 
-    fun getFriends() {
+    fun getMessages() {
         if (_isBusy.value == null || _isBusy.value == true)
             return
 
         _isBusy.value = true
         viewModelScope.launch {
-            roomRepository.getFriends({ friends ->
+            roomRepository.getMessages({ messages ->
                 _isBusy.value = false
-                _onGetFriends.value = ArrayList(friends)
+                _onGetMessages.value = ArrayList(messages)
             }, {
                 _isBusy.value = false
                 _onError.value = it
@@ -48,17 +48,20 @@ class HomeViewModel(private val database: MessagingAppRoomDatabase) : ViewModel(
     }
 
 
-    fun addNewFriend(name: String) {
+    fun addNewMessage(message: String?, isReceived: Boolean = false) {
         if (_isBusy.value == null || _isBusy.value == true)
             return
 
-        val newId = _onGetFriends.value?.lastOrNull()?.id?.plus(1) ?: 1
+        if (message.isNullOrEmpty())
+            return
+
+        val newId = _onGetMessages.value?.lastOrNull()?.id?.plus(1) ?: 1
         _isBusy.value = true
-        val friend = Friend(newId, name)
+        val message = Message(newId, message, isReceived)
         viewModelScope.launch {
-            roomRepository.addFriend(friend, {
+            roomRepository.addMessage(message, {
                 _isBusy.value = false
-                getFriends()
+                getMessages()
             }, {
                 _isBusy.value = false
                 _onError.value = it
@@ -68,10 +71,10 @@ class HomeViewModel(private val database: MessagingAppRoomDatabase) : ViewModel(
 
 }
 
-class HomeViewModelFactory(private val roomDatabase: MessagingAppRoomDatabase) :
+class ChatViewModelFactory(private val roomDatabase: MessagingAppRoomDatabase) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(ChatViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return HomeViewModel(roomDatabase) as T
         }
