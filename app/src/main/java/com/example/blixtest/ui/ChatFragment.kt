@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blixtest.databinding.FragmentChatBinding
 import com.example.blixtest.room.MessagingAppRoomDatabase
 import com.example.blixtest.utils.GsonUtil
 import modals.Friend
+
 
 class ChatFragment: Fragment() {
 
@@ -45,6 +47,9 @@ class ChatFragment: Fragment() {
     private fun setupViews() {
         chatAdapter = ChatAdapter(requireContext())
         binding.recyclerViewMessages.adapter = chatAdapter
+        val mLinearLayoutManager = LinearLayoutManager(requireContext())
+        mLinearLayoutManager.stackFromEnd = true
+        binding.recyclerViewMessages.layoutManager = mLinearLayoutManager
         binding.imageButtonSend.setOnClickListener {
             friend?.let { unwrappedFriend ->
                 val messageText = binding.editTextWrite.text.toString()
@@ -53,7 +58,6 @@ class ChatFragment: Fragment() {
             }
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -72,6 +76,7 @@ class ChatFragment: Fragment() {
 
         viewModel.onGetMessage.observe(viewLifecycleOwner) { messages ->
             chatAdapter.chatMessages = messages
+            binding.recyclerViewMessages.smoothScrollToPosition(chatAdapter.itemCount)
         }
 
     }

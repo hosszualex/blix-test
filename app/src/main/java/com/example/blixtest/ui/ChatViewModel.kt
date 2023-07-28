@@ -36,7 +36,9 @@ class ChatViewModel(private val database: MessagingAppRoomDatabase) : ViewModel(
         viewModelScope.launch {
             roomRepository.getMessages(friend.id, { messages ->
                 _isBusy.value = false
-                _onGetMessages.value = ArrayList(messages)
+                val newMessages = ArrayList(messages)
+                _onGetMessages.value = newMessages
+                verifyAutomaticResponse(friend, newMessages.lastOrNull())
             }, {
                 _isBusy.value = false
                 _onError.value = it
@@ -53,7 +55,7 @@ class ChatViewModel(private val database: MessagingAppRoomDatabase) : ViewModel(
         if (message.isNullOrEmpty())
             return
 
-        val order = _onGetMessages.value?.lastOrNull()?.id?.plus(1) ?: 1
+        val order = _onGetMessages.value?.lastOrNull()?.order?.plus(1) ?: 1
         _isBusy.value = true
         val message = Message((0..999999).random(), message, isReceived, friend.id, order)
         viewModelScope.launch {
@@ -65,6 +67,25 @@ class ChatViewModel(private val database: MessagingAppRoomDatabase) : ViewModel(
                 _onError.value = it
             })
         }
+    }
+
+    private fun verifyAutomaticResponse(friend: Friend, message: Message?) {
+        if (message == null)
+            return
+        // TODO Create constants if we have time
+        val order = _onGetMessages.value?.lastOrNull()?.order?.plus(1) ?: 1
+        val receivedMessage = when(message.message) {
+            "Hi! How are you?" -> {
+                "I'm good! How are you?"
+            }
+            "Did you manage to sell your car?" -> {
+                "Unfortunately, not :(. It's very difficult in this marketplace"
+            }
+            else -> null
+        }
+
+
+        addNewMessage(friend, receivedMessage, true)
     }
 
 }

@@ -90,7 +90,6 @@ class HomeFragment: Fragment(), FriendsListAdapter.IOnFriendClickListener {
         Navigation.findNavController(requireView()).navigate(R.id.fragmentChat, Bundle().apply {
             putString("FRIEND_KEY", GsonUtil.toJson(friend))
         })
-       // TODO("Not yet implemented")
     }
 
 }
