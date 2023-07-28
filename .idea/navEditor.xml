@@ -203,19 +203,19 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
-                  <entry key="fragmentHome">
+                  <entry key="fragmentChat">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="12" />
-                            <option name="y" value="12" />
+                            <option name="x" value="207" />
+                            <option name="y" value="10" />
                           </Point>
                         </option>
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="homeFragment">
+                  <entry key="fragmentHome">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">

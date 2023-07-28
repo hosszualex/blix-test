@@ -9,8 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import com.example.blixtest.R
 import com.example.blixtest.databinding.FragmentHomeBinding
 import com.example.blixtest.room.MessagingAppRoomDatabase
+import com.example.blixtest.utils.GsonUtil
+import modals.Friend
 
 
 class HomeFragment: Fragment(), FriendsListAdapter.IOnFriendClickListener {
@@ -82,7 +86,10 @@ class HomeFragment: Fragment(), FriendsListAdapter.IOnFriendClickListener {
 
     }
 
-    override fun onFriendClicked() {
+    override fun onFriendClicked(friend: Friend) {
+        Navigation.findNavController(requireView()).navigate(R.id.fragmentChat, Bundle().apply {
+            putString("FRIEND_KEY", GsonUtil.toJson(friend))
+        })
        // TODO("Not yet implemented")
     }
 

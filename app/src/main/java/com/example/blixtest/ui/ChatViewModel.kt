@@ -6,7 +6,9 @@ import com.example.blixtest.repositories.RoomMessagesManagementRepositoryImpl
 import com.example.blixtest.room.MessagingAppRoomDatabase
 import com.example.blixtest.utils.SingleLiveEvent
 import kotlinx.coroutines.launch
+import modals.Friend
 import modals.Message
+import kotlin.random.Random
 
 class ChatViewModel(private val database: MessagingAppRoomDatabase) : ViewModel() {
 
@@ -25,18 +27,14 @@ class ChatViewModel(private val database: MessagingAppRoomDatabase) : ViewModel(
     private val roomRepository: IMessageManagementRepository =
         RoomMessagesManagementRepositoryImpl(database.messageDAO())
 
-    init {
-        getMessages()
-    }
 
-
-    fun getMessages() {
+    fun getMessages(friend: Friend) {
         if (_isBusy.value == null || _isBusy.value == true)
             return
 
         _isBusy.value = true
         viewModelScope.launch {
-            roomRepository.getMessages({ messages ->
+            roomRepository.getMessages(friend.id, { messages ->
                 _isBusy.value = false
                 _onGetMessages.value = ArrayList(messages)
             }, {
@@ -48,20 +46,20 @@ class ChatViewModel(private val database: MessagingAppRoomDatabase) : ViewModel(
     }
 
 
-    fun addNewMessage(message: String?, isReceived: Boolean = false) {
+    fun addNewMessage(friend: Friend, message: String?, isReceived: Boolean = false) {
         if (_isBusy.value == null || _isBusy.value == true)
             return
 
         if (message.isNullOrEmpty())
             return
 
-        val newId = _onGetMessages.value?.lastOrNull()?.id?.plus(1) ?: 1
+        val order = _onGetMessages.value?.lastOrNull()?.id?.plus(1) ?: 1
         _isBusy.value = true
-        val message = Message(newId, message, isReceived)
+        val message = Message((0..999999).random(), message, isReceived, friend.id, order)
         viewModelScope.launch {
             roomRepository.addMessage(message, {
                 _isBusy.value = false
-                getMessages()
+                getMessages(friend)
             }, {
                 _isBusy.value = false
                 _onError.value = it
@@ -76,7 +74,7 @@ class ChatViewModelFactory(private val roomDatabase: MessagingAppRoomDatabase) :
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ChatViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(roomDatabase) as T
+            return ChatViewModel(roomDatabase) as T
         }
         throw IllegalArgumentException("UNKNOWN VIEW MODEL CLASS")
     }

@@ -21,7 +21,7 @@ class FriendsListAdapter(
         }
 
     interface IOnFriendClickListener {
-        fun onFriendClicked()
+        fun onFriendClicked(friend: Friend)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -49,7 +49,7 @@ class FriendsListAdapter(
             with(binding) {
                 textViewName.text = item.name
                 root.setOnClickListener {
-                    listener.onFriendClicked()
+                    listener.onFriendClicked(item)
                 }
             }
         }

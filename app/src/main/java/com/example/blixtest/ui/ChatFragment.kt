@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.blixtest.databinding.FragmentChatBinding
 import com.example.blixtest.room.MessagingAppRoomDatabase
+import com.example.blixtest.utils.GsonUtil
+import modals.Friend
 
 class ChatFragment: Fragment() {
 
@@ -17,6 +19,7 @@ class ChatFragment: Fragment() {
 
     private lateinit var viewModel: ChatViewModel
     private lateinit var chatAdapter: ChatAdapter
+    private var friend: Friend? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,16 +33,24 @@ class ChatFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getArgumentData()
         setupViews()
         connectViewModel()
+    }
+
+    private fun getArgumentData() {
+        friend = GsonUtil.fromJsonObject(arguments?.getString("FRIEND_KEY").toString(), Friend::class.java) as Friend?
     }
 
     private fun setupViews() {
         chatAdapter = ChatAdapter(requireContext())
         binding.recyclerViewMessages.adapter = chatAdapter
         binding.imageButtonSend.setOnClickListener {
-            val messageText = binding.editTextWrite.text.toString()
-            viewModel.addNewMessage(messageText)
+            friend?.let { unwrappedFriend ->
+                val messageText = binding.editTextWrite.text.toString()
+                binding.editTextWrite.text?.clear()
+                viewModel.addNewMessage(unwrappedFriend, messageText)
+            }
         }
     }
 
@@ -50,6 +61,7 @@ class ChatFragment: Fragment() {
     }
 
     private fun connectViewModel() {
+        friend?.let { viewModel.getMessages(it) }
         viewModel.onError.observe(viewLifecycleOwner) {
             Log.i("===HOME_VIEW_MODEL_ERROR===>", it)
         }

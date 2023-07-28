@@ -8,10 +8,11 @@ class RoomMessagesManagementRepositoryImpl(private val messagesDAO: IMessagesDAO
     IMessageManagementRepository {
 
     override suspend fun getMessages(
+        parentId: Int,
         successCallback: (List<Message>) -> Unit,
         failedCallback: (String) -> Unit
     ) {
-        successCallback(messagesDAO.getMessagesChronologically())
+        successCallback(messagesDAO.getMessagesChronologically(parentId))
     }
 
     override suspend fun addMessage(
